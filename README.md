@@ -1,2 +1,3 @@
-# grayscaleAlgorithms
-Algoritmos de conversión monocromática aplicado en mapas de bits.
+# imageFilterAlgorithms
+
+Implementación de algoritmos para filtrar mapas de bits.

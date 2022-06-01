@@ -1,5 +1,5 @@
 /*  
-    Filtros de escalas de grises (Algoritmos de Gimp)
+    Filtros de mapas de bits
     Lic. en computación García Héctor
 */
 
@@ -13,12 +13,22 @@ let mode;
     3->Lightness gimp algorithm
     4->Luminosity gimp algorithm
     5->Grayscale gimp algorithm
+    6->Distorted algorithm
  */
-function imageFilter(mode) {
-    imageMode(CORNER);
-    //Renderizamos la imagen
-    image(img, 0, 0, img.width, img.height);
-    //Cargo los pixeles de la imagen en el array pixels
+
+function distortedFilter() {
+    let cont = 0;
+    while (cont < 100) {
+        cont++;
+        let x1 = floor(random(width));
+        let x2 = x1 + floor(random(-20, 20));
+        let w = floor(random(10, 12));
+        let h = height;
+        set(x2, 0, get(x1, 0, w, h));
+    }
+}
+
+function grayScaleFilters(mode) {
     loadPixels();
     for (let x = 0; x < width; x++) {
         for (let y = 0; y < height * 4; y++) {
@@ -64,8 +74,21 @@ function imageFilter(mode) {
             }
         }
     }
+
     //Actualizo los pixeles de la imagen cargada
     updatePixels();
+}
+
+function imageFilter(mode) {
+    imageMode(CORNER);
+    //Renderizamos la imagen
+    image(img, 0, 0, img.width, img.height);
+    //Cargo los pixeles de la imagen en el array pixels
+    if (mode >= 1 && mode <= 5) {
+        grayScaleFilters(mode);
+    } else if (mode == 6) {
+        distortedFilter();
+    }
 }
 
 //Accionamos ante el cambio del evento
@@ -94,6 +117,7 @@ function setup() {
     sel.option("03 - Lightness Gimp algorithm");
     sel.option("04 - Luminosity Gimp algorithm");
     sel.option("05 - Grayscale algorithm");
+    sel.option("06 - Distorted algorithm");
     sel.changed(mySelectEvent);
 
     threshold = 40;
