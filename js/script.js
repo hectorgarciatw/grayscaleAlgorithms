@@ -14,6 +14,8 @@ let mode;
     4->Luminosity gimp algorithm
     5->Grayscale gimp algorithm
     6->Distorted algorithm
+    7-> Crop squares
+    8-> Figures algorithm
  */
 
 function distortedFilter() {
@@ -26,6 +28,24 @@ function distortedFilter() {
         let h = height;
         set(x2, 0, get(x1, 0, w, h));
     }
+}
+
+function cropSquaresFilter() {
+    let cont = 0;
+    let movement = 9;
+    let size = 60;
+    while (cont < 200) {
+        cont++;
+        let x1 = constrain(floor(random(width)), 0, width);
+        let y1 = constrain(floor(random(height)), 0, height);
+        let x2 = x1 + floor(random(-movement, movement));
+        let y2 = y1 + floor(random(-movement, movement));
+        set(x2, y2, get(x1, y1, size, size));
+    }
+}
+
+function figuresFilter() {
+    console.log("hola");
 }
 
 function grayScaleFilters(mode) {
@@ -88,6 +108,10 @@ function imageFilter(mode) {
         grayScaleFilters(mode);
     } else if (mode == 6) {
         distortedFilter();
+    } else if (mode == 7) {
+        cropSquaresFilter();
+    } else if (mode == 8) {
+        figuresFilter();
     }
 }
 
@@ -102,22 +126,25 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(800, 800);
+    let myCanvas = createCanvas(800, 800);
+    myCanvas.parent("my-canvas");
     //Por defecto corremos el threshold algorithm
     mode = 1;
     //Creamos el slider para determinar el threshold
     slider = createSlider(2, 256, 40, 10);
-    slider.position(10, 50);
+    slider.position(130, 180);
     slider.style("width", "100px");
     //Creamos el select
     sel = createSelect();
-    sel.position(10, 10);
+    sel.position(125, 130);
     sel.option("01 - Threshold algorithm");
     sel.option("02 - Average Gimp algorithm");
     sel.option("03 - Lightness Gimp algorithm");
     sel.option("04 - Luminosity Gimp algorithm");
     sel.option("05 - Grayscale algorithm");
     sel.option("06 - Distorted algorithm");
+    sel.option("07 - Crop squares algorithm");
+    sel.option("08 - Figures algorithm");
     sel.changed(mySelectEvent);
 
     threshold = 40;
@@ -130,7 +157,7 @@ function draw() {
     if (mode == 1) {
         textSize(15);
         fill(0);
-        text("Nivel del filtro threshold", 5, 40);
+        text("Nivel del filtro threshold", 5, 47);
     }
     if (mode == 5) {
         textSize(15);
@@ -138,10 +165,15 @@ function draw() {
         text("Cantidad de sombras", 5, 40);
     }
 
-    //En caso de variar el threshold aplicamos el filtro nuevamente
+    //En caso de letiar el threshold aplicamos el filtro nuevamente
     if (threshold != slider.value()) {
         threshold = slider.value();
         numberOfShades = slider.value();
         imageFilter(mode);
     }
+}
+
+//Guardamos la imagen filtrada de manera local
+function keyPressed() {
+    if (key == "s" || key == "S") saveCanvas("myImage", "png");
 }
